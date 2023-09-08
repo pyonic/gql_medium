@@ -1,0 +1,63 @@
+version: '2.0'
+
+services:
+  ax_postgres:
+    build: 
+      context: ./database
+    restart: always
+    container_name: ax_postgres_db
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_ax:/var/lib/postgresql/data
+    env_file:
+      - .env
+    ports:
+      - '5432:5432'
+    networks:
+      - ax_network
+  ax_api:
+    build: .
+    container_name: ax_backend_api
+    restart: on-failure
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@ax_postgres:5432/ax_medium_db
+    env_file:
+      - .env
+    networks:
+      - ax_network
+    command: node dist/src/main.js
+    depends_on:
+      - ax_postgres
+  migration:
+    build:
+      context: .
+    command: [
+      "./wait-for-it/wait-for-it.sh",
+      "ax_postgres:5432",
+      "--",
+      "npm",
+      "run",
+      "migrations"
+    ]
+    links:
+      - ax_postgres
+    depends_on:
+      - ax_postgres
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@ax_postgres:5432/ax_medium_db
+    env_file:
+      - .env
+    networks:
+      - ax_network
+
+volumes:
+  postgres_ax:
+
+networks:
+  ax_network:
+    driver: bridge

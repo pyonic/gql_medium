@@ -1,0 +1,80 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type PostOutput {
+  id: Int!
+  title: String!
+  content: String!
+  author_id: Int!
+  author: GqlUser!
+  viewers: [GqlUser!]!
+}
+
+type GqlUser {
+  id: Int!
+  name: String!
+  email: String!
+  role: String!
+  posts: [PostOutput!]!
+  viewedPosts: [PostOutput!]!
+}
+
+type PaginationMetaData {
+  lastCursor: Int
+  hasNextPage: Boolean!
+}
+
+type PostsResponse {
+  data: [PostOutput!]!
+  metaData: PaginationMetaData!
+}
+
+type LoginUserResponse {
+  accessToken: String!
+  refreshToken: String!
+}
+
+type Query {
+  get_users(limit: Int, page: Int): [GqlUser!]!
+  get_user_by_id(queryInput: UserQueryInput!): GqlUser!
+  get_posts(take: Int, lastCursor: Int): PostsResponse!
+  get_post_by_id(id: Int!): PostOutput!
+}
+
+input UserQueryInput {
+  id: Int!
+}
+
+type Mutation {
+  create_post(createPostInput: PostInput!): PostOutput!
+  login(loginUserInput: LoginUserInput!): LoginUserResponse!
+  register(registerUserInput: RegisterUserInput!): LoginUserResponse!
+  refresh(refreshInput: RefreshTokenInput!): LoginUserResponse!
+}
+
+input PostInput {
+  title: String!
+  content: String!
+}
+
+input LoginUserInput {
+  email: String!
+  password: String!
+}
+
+input RegisterUserInput {
+  name: String!
+  email: String!
+  password: String!
+  role: Roles = user
+}
+
+enum Roles {
+  user
+  admin
+}
+
+input RefreshTokenInput {
+  refresh_token: String!
+}

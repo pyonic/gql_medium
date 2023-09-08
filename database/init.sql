@@ -1,0 +1,1 @@
+CREATE DATABASE IF NOT EXISTS ax_medium_db;
