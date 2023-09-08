@@ -2,7 +2,7 @@
 *   Create .env
 
 ```
-Rename .env.example to .env (if you are going to change the database name then please change it in database/init.sh script also)
+Rename .env.example to .env (if you are going to change the database name then please change it in database/init.sql script also)
 ```
 
 *   Run docker containers
